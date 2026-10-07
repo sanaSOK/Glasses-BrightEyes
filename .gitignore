@@ -31,5 +31,6 @@ Thumbs.db
 # Docker volumes
 postgres_data/
 
-docker-compose.yml
+# Local SQL session files
 BrightEyes (glass_db - Port 5433).session.sql
+*.session.sql
