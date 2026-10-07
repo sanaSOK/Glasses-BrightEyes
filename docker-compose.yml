@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: brighteyes-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: glass_db
+      POSTGRES_USER: brighteyes
+      POSTGRES_PASSWORD: brighteyes_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: brighteyes-backend
+    restart: always
+    environment:
+      DATABASE_URL: postgresql://brighteyes:brighteyes_password@postgres:5432/glass_db?schema=public
+      PORT: 3000
+      JWT_SECRET: super_secret_brighteyes_jwt_access_key_2026
+      JWT_REFRESH_SECRET: super_secret_brighteyes_jwt_refresh_key_2026
+      JWT_EXPIRES_IN: 15m
+      JWT_REFRESH_EXPIRES_IN: 7d
+      FRONTEND_URL: http://localhost:5173
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+
+  frontend:
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile
+    container_name: brighteyes-frontend
+    restart: always
+    environment:
+      VITE_API_URL: http://localhost:3000/api
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

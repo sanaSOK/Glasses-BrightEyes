@@ -1,0 +1,300 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SUPER_ADMIN
+  WHOLESALER
+  RETAILER
+}
+
+enum ProductType {
+  FRAME
+  SUNGLASSES
+  CONTACT_LENS
+  OPTICAL_LENS
+  ACCESSORY
+  EQUIPMENT
+  OTHER
+}
+
+enum ProductStatus {
+  ACTIVE
+  INACTIVE
+  OUT_OF_STOCK
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  READY_FOR_DELIVERY
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REJECTED
+}
+
+enum DeliveryMethod {
+  DELIVERY
+  SELF_PICKUP
+}
+
+enum DeliveryStatus {
+  PENDING
+  ASSIGNED
+  PICKED_UP
+  IN_TRANSIT
+  DELIVERED
+  CANCELLED
+}
+
+model User {
+  id         String   @id @default(uuid())
+  email      String   @unique
+  password   String
+  name       String
+  phone      String?
+  role       Role     @default(RETAILER)
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  wholesaler Wholesaler?
+  retailer   Retailer?
+
+  @@map("users")
+}
+
+model Wholesaler {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyName     String
+  businessAddress String
+  province        String
+  district        String
+  phone           String
+  email           String?
+  logoUrl         String?
+  description     String?
+  status          String   @default("ACTIVE")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  products    Product[]
+  inventories Inventory[]
+  orders      Order[]
+
+  @@map("wholesalers")
+}
+
+model Retailer {
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  storeName    String
+  storeAddress String
+  province     String
+  district     String
+  phone        String
+  email        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  stores              Store[]
+  cart                Cart?
+  orders              Order[]
+  retailerInventories RetailerInventory[]
+
+  @@map("retailers")
+}
+
+model Store {
+  id         String   @id @default(uuid())
+  retailerId String
+  retailer   Retailer @relation(fields: [retailerId], references: [id], onDelete: Cascade)
+  storeName  String
+  address    String
+  province   String
+  district   String
+  phone      String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("stores")
+}
+
+model ProductCategory {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  icon        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  products Product[]
+
+  @@map("product_categories")
+}
+
+model Product {
+  id             String        @id @default(uuid())
+  SKU            String        @unique
+  name           String
+  description    String?
+  categoryId     String
+  category       ProductCategory @relation(fields: [categoryId], references: [id])
+  wholesalerId   String
+  wholesaler     Wholesaler    @relation(fields: [wholesalerId], references: [id], onDelete: Cascade)
+  brand          String
+  productType    ProductType   @default(FRAME)
+  model          String?
+  color          String?
+  size           String?
+  material       String?
+  gender         String?       @default("UNISEX")
+  price          Float
+  wholesalePrice Float
+  status         ProductStatus @default(ACTIVE)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  images              ProductImage[]
+  inventory           Inventory?
+  cartItems           CartItem[]
+  orderItems          OrderItem[]
+  retailerInventories RetailerInventory[]
+
+  @@map("products")
+}
+
+model ProductImage {
+  id        String   @id @default(uuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  imageUrl  String
+  isPrimary Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("product_images")
+}
+
+model Inventory {
+  id                 String     @id @default(uuid())
+  productId          String     @unique
+  product            Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  wholesalerId       String
+  wholesaler         Wholesaler @relation(fields: [wholesalerId], references: [id], onDelete: Cascade)
+  quantity           Int        @default(0)
+  reservedQuantity   Int        @default(0)
+  lowStockThreshold  Int        @default(10)
+  updatedAt          DateTime   @updatedAt
+
+  @@map("inventories")
+}
+
+model Cart {
+  id         String     @id @default(uuid())
+  retailerId String     @unique
+  retailer   Retailer   @relation(fields: [retailerId], references: [id], onDelete: Cascade)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  items CartItem[]
+
+  @@map("carts")
+}
+
+model CartItem {
+  id        String   @id @default(uuid())
+  cartId    String
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int      @default(1)
+  price     Float
+  subtotal  Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("cart_items")
+}
+
+model Order {
+  id              String      @id @default(uuid())
+  orderNumber     String      @unique
+  retailerId      String
+  retailer        Retailer    @relation(fields: [retailerId], references: [id])
+  wholesalerId    String
+  wholesaler      Wholesaler  @relation(fields: [wholesalerId], references: [id])
+  subtotal        Float
+  deliveryFee     Float       @default(0.0)
+  total           Float
+  orderStatus     OrderStatus @default(PENDING)
+  shippingAddress String
+  province        String
+  district        String
+  commune         String?
+  phone           String
+  notes           String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  orderItems OrderItem[]
+  delivery   Delivery?
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id          String   @id @default(uuid())
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id])
+  SKU         String
+  productName String
+  quantity    Int
+  price       Float
+  subtotal    Float
+  createdAt   DateTime @default(now())
+
+  @@map("order_items")
+}
+
+model RetailerInventory {
+  id          String   @id @default(uuid())
+  retailerId  String
+  retailer    Retailer @relation(fields: [retailerId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity    Int      @default(0)
+  lastUpdated DateTime @updatedAt
+
+  @@unique([retailerId, productId])
+  @@map("retailer_inventories")
+}
+
+model Delivery {
+  id              String         @id @default(uuid())
+  orderId         String         @unique
+  order           Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  deliveryMethod  DeliveryMethod @default(DELIVERY)
+  deliveryAddress String
+  province        String
+  district        String
+  commune         String?
+  phone           String
+  trackingNumber  String?
+  status          DeliveryStatus @default(PENDING)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@map("deliveries")
+}
