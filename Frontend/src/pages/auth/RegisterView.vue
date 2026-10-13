@@ -6,41 +6,11 @@
         <Glasses class="w-6 h-6" />
       </div>
       <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">
-        {{ currentRole === 2 ? 'Wholesaler Supplier Registration' : 'Retail Optical Store Registration' }}
+        Optical Store Registration
       </h2>
       <p class="text-xs text-slate-500 mt-1">
-        {{ currentRole === 2 ? 'Role = 2 (Wholesaler Supplier Account)' : 'Role = 1 (Retail Optical Store Account)' }}
+        Create a new BrightEyes B2B optical account
       </p>
-    </div>
-
-    <!-- Direct Role Switcher Bar -->
-    <div class="flex items-center bg-slate-100 p-1 rounded-2xl mb-6 text-xs font-bold">
-      <button
-        type="button"
-        @click="setRole(1)"
-        :class="[
-          'flex-1 py-2.5 rounded-xl transition-all text-center flex items-center justify-center gap-1.5',
-          currentRole === 1
-            ? 'bg-sky-600 text-white shadow-md'
-            : 'text-slate-600 hover:text-slate-900'
-        ]"
-      >
-        <span>👓 Retailer Store</span>
-        <span class="text-[10px] opacity-80">(Role 1)</span>
-      </button>
-      <button
-        type="button"
-        @click="setRole(2)"
-        :class="[
-          'flex-1 py-2.5 rounded-xl transition-all text-center flex items-center justify-center gap-1.5',
-          currentRole === 2
-            ? 'bg-purple-600 text-white shadow-md'
-            : 'text-slate-600 hover:text-slate-900'
-        ]"
-      >
-        <span>🏬 Wholesaler Supplier</span>
-        <span class="text-[10px] opacity-80">(Role 2)</span>
-      </button>
     </div>
 
     <div v-if="errorMessage" class="mb-4 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold">

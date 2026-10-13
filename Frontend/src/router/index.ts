@@ -66,6 +66,11 @@ const router = createRouter({
           name: 'admin-orders',
           component: () => import('@/pages/admin/AllOrdersView.vue'),
         },
+        {
+          path: 'lenses',
+          name: 'admin-lenses',
+          component: () => import('@/pages/admin/LensAdminDashboard.vue'),
+        },
       ],
     },
 
@@ -156,36 +161,58 @@ const router = createRouter({
   ],
 });
 
-// Navigation Guard for Authentication and RBAC
+// Navigation Guard: Strict Role-Based Access Control (RBAC)
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
 
-  if (to.path === '/' && authStore.isAuthenticated) {
-    if (authStore.isSuperAdmin) return next('/admin');
-    if (authStore.isWholesaler) return next('/wholesaler');
-    return next('/retailer');
-  }
+  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
+  const guestOnly = to.matched.some((record) => record.meta.guestOnly);
 
-  if (to.meta.guestOnly && authStore.isAuthenticated) {
-    if (authStore.isSuperAdmin) return next('/admin');
-    if (authStore.isWholesaler) return next('/wholesaler');
-    return next('/retailer');
-  }
+  // Collect required roles from matched route records
+  const requiredRoles = to.matched.reduce<string[]>((acc, record) => {
+    if (Array.isArray(record.meta.roles)) {
+      acc.push(...(record.meta.roles as string[]));
+    }
+    return acc;
+  }, []);
 
-  if (to.meta.requiresAuth) {
-    if (!authStore.isAuthenticated) {
-      return next('/login');
+  // 1. Protected Route: Requires authenticated user
+  if (requiresAuth) {
+    if (!authStore.isAuthenticated || !authStore.role) {
+      // User is not logged in: redirect to login page with intended destination
+      return next({
+        path: '/login',
+        query: { redirect: to.fullPath },
+      });
     }
 
-    const requiredRoles = to.meta.roles as string[];
-    if (requiredRoles && !requiredRoles.includes(authStore.role || '')) {
-      // Role not allowed, redirect appropriately
-      if (authStore.isSuperAdmin) return next('/admin');
-      if (authStore.isWholesaler) return next('/wholesaler');
+    // User is logged in: Check if their role is permitted for this route
+    if (requiredRoles.length > 0 && !requiredRoles.includes(authStore.role)) {
+      // Unauthorized role access: redirect strictly to the user's authorized portal
+      if (authStore.role === 'SUPER_ADMIN') {
+        return next('/admin');
+      } else if (authStore.role === 'WHOLESALER') {
+        return next('/wholesaler');
+      } else if (authStore.role === 'RETAILER') {
+        return next('/retailer');
+      } else {
+        return next('/login');
+      }
+    }
+  }
+
+  // 2. Guest-Only Route (e.g. /login, /register): Redirect if already logged in
+  if (guestOnly && authStore.isAuthenticated && authStore.role) {
+    if (authStore.role === 'SUPER_ADMIN') {
+      return next('/admin');
+    } else if (authStore.role === 'WHOLESALER') {
+      return next('/wholesaler');
+    } else if (authStore.role === 'RETAILER') {
       return next('/retailer');
     }
   }
 
+  // 3. Allow navigation
   next();
 });
 

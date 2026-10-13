@@ -86,24 +86,7 @@ export default function AgenticFactory3D({
         aria-label="Interactive 3D machine with five stations: Engine, Admin, Storefront, Cabinet and Checkout. Drag to rotate, scroll or pinch to zoom. Hover or tap a station to take a closer look."
       />
       <div className="vignette" />
-      <header className="topbar debug-ui">
-        <div className="identity">
-          <div className="mark">
-            <svg width="17" height="17" viewBox="0 0 20 20" fill="none">
-              <path
-                d="M3 5l7 11 7-11M7 5l3 5 3-5"
-                stroke="currentColor"
-                strokeWidth="1.7"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
-          <div>
-            <strong>Agentic Factory</strong>
-            <small>Interactive workshop</small>
-          </div>
-        </div>
+      <header className="topbar debug-ui" style={{ justifyContent: 'flex-end' }}>
         <div className="status" id="status">
           <i />
           <span id="status-text">Machine running</span>

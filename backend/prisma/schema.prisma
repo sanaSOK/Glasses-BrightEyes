@@ -298,3 +298,253 @@ model Delivery {
 
   @@map("deliveries")
 }
+
+model Brand {
+  id          String        @id @default(uuid())
+  name        String        @unique
+  code        String?
+  description String?
+  logoUrl     String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  lensProducts LensProduct[]
+
+  @@map("brands")
+}
+
+model LensProduct {
+  id               String        @id @default(uuid())
+  SKU              String        @unique
+  name             String
+  description      String?
+  brandId          String
+  brand            Brand         @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  lensType         String        // 'Contact Lens', 'Single Vision', 'Bifocal', 'Progressive', 'Sunglass'
+  refractiveIndex  Float?        // 1.50, 1.56, 1.61, 1.67, 1.74
+  coating          String?       // UC, HC, HMC, SHMC, MC
+  material         String?       // CR-39 Plastic, Trivex, Polycarbonate, Glasses, HEMA, Hydrogel, Silicon Hydrogel
+  designType       String?       // Spheric, Aspheric, Free form, Sportive
+  tintColor        String?
+  uvProtection     String?       // UV400, UV420, UV380, None
+  isPolarized      Boolean       @default(false)
+  
+  // Feature flags
+  antiGlare        Boolean       @default(false)
+  antiBlueLight    Boolean       @default(false)
+  scratchResistant Boolean       @default(false)
+  emi              Boolean       @default(false)
+  waterResistant   Boolean       @default(false)
+  myopiaControl    Boolean       @default(false)
+
+  // Contact Lens Specifics
+  baseCurve        Float?        // BC: 9.0, 10.0, 12.0mm
+  diameter         Float?        // DIA: 14.0, 14.2, 14.5mm
+  waterContent     String?       // WC: 40%, 50%, 60%
+  usageType        String?       // Daily, Weekly, Monthly, 12 Month
+
+  price            Float         @default(0)
+  costPrice        Float         @default(0)
+  wholesalerId     String?
+
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  variants         LensVariant[]
+  orderItems       LensOrderItem[]
+
+  @@map("lens_products")
+}
+
+model LensVariant {
+  id            String      @id @default(uuid())
+  lensProductId String
+  lensProduct   LensProduct @relation(fields: [lensProductId], references: [id], onDelete: Cascade)
+  sphere        Float       // S: -10.00 to +6.00
+  cylinder      Float?      // C: -4.00 to 0.00 (Single Vision / Sunglass)
+  addPower      Float?      // ADD: +1.00 to +4.00 (Bifocal / Progressive)
+  eyeSide       String?     @default("PAIR") // R, L, PAIR (Progressive / Laterality)
+  sku           String      @unique
+  code          String?
+  quantity      Int         @default(0)
+  quantityR     Int         @default(0)
+  quantityL     Int         @default(0)
+  costPrice     Float       @default(0)
+  sellingPrice  Float       @default(0)
+  minStock      Int         @default(5)
+  maxStock      Int         @default(100)
+  cellColor     String?     @default("#10b981") // Hex color code for matrix stock grid visualization
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  orderItems    LensOrderItem[]
+
+  @@map("lens_variants")
+}
+
+model LensOrder {
+  id            String          @id @default(uuid())
+  invoiceNumber String          @unique
+  customerName  String?         @default("Walk-in Customer")
+  customerPhone String?
+  subtotal      Float
+  discount      Float           @default(0)
+  total         Float
+  status        String          @default("COMPLETED")
+  notes         String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  orderItems    LensOrderItem[]
+
+  @@map("lens_orders")
+}
+
+model LensOrderItem {
+  id            String       @id @default(uuid())
+  lensOrderId   String
+  lensOrder     LensOrder    @relation(fields: [lensOrderId], references: [id], onDelete: Cascade)
+  lensProductId String
+  lensProduct   LensProduct  @relation(fields: [lensProductId], references: [id])
+  variantId     String?
+  variant       LensVariant? @relation(fields: [variantId], references: [id])
+  productName   String
+  sphere        Float?
+  cylinder      Float?
+  addPower      Float?
+  eyeSide       String?      @default("PAIR")
+  axis          Float?
+  quantity      Int          @default(1)
+  unitPrice     Float
+  subtotal      Float
+  createdAt     DateTime     @default(now())
+
+  @@map("lens_order_items")
+}
+
+// =========================================================================
+// UNIFIED LENS ORDERING & INVENTORY MANAGEMENT SYSTEM
+// Supports: Custom Rx Lab Orders, Stock Lens Orders, Remote Edging
+// =========================================================================
+
+model UnifiedLensOrder {
+  id              String          @id @default(uuid())
+  orderNo         String          @unique
+  orderRef        String?
+  orderType       String          @default("RX Lab Order") // 'RX Lab Order', 'Stock Lens Order', 'Remote Edging'
+  buyer           String?
+  shop            String?
+  orderingPerson  String?
+  patientName     String?
+  patientCode     String?
+  trayId          String?
+  orderStatus     String          @default("Producing Surfacing") // 'Pending', 'Producing Surfacing', 'Coating / Tinting', 'Quality Check', 'Ready for Dispatch', 'Shipped', 'Delivered'
+  orderDate       DateTime        @default(now())
+  logisticsDate   DateTime?
+  isUrgent        Boolean         @default(false)
+  accountCode     String?         // ACC
+  notes           String?
+  totalAmount     Float           @default(0)
+  totalPieces     Int             @default(0)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  frame           OrderFrame?
+  lensItems       OrderLensItem[]
+
+  @@map("unified_lens_orders")
+}
+
+model OrderFrame {
+  id              String            @id @default(uuid())
+  orderId         String            @unique
+  order           UnifiedLensOrder  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  frameShape      String?
+  tracerFlag      String?
+  frameWidthA     Float?            // A
+  frameHeightB    Float?            // B
+  effectiveDiaEd  Float?            // ED
+  noseBridgeDbl   Float?            // DBL
+  faceFormAngle   Float?
+  pantoscopicTilt Float?
+  refractedBvd    Float?
+  fittedBvd       Float?
+  baseCurve       Float?
+  frameType       String?           // 'Metal Fullrim', 'Plastic Fullrim', 'Rimless', 'Halfrim', etc.
+  vd              Float?
+  tilt            Float?
+  wrap            Float?
+
+  // Measurements per eye
+  pdFarR          Float?
+  pdFarL          Float?
+  pdNearR         Float?
+  pdNearL         Float?
+  heightR         Float?
+  heightL         Float?
+
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@map("order_frames")
+}
+
+model OrderLensItem {
+  id                  String            @id @default(uuid())
+  orderId             String
+  order               UnifiedLensOrder  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  lensType            String?           // 'Single Vision RX', 'Bifocal', 'Progressive', 'Stock Lens'
+  productName         String
+  designType          String?           // 'Aspherical', 'Spherical', 'SV RX Golf', etc.
+  refractiveIndex     Float?
+  material            String?
+  tintingType         String?
+  tintColor           String?
+  tintFrom            String?
+  tintTo              String?
+  gradationPoint      String?
+  coating             String?
+  treatments          String?           // UNC, HC, HMC, Super HMC, Anti-Fog HMC, etc.
+  quantity            Int               @default(1)
+  specialInstructions String?
+
+  // Prescription grid per eye ('Right' / 'Left' / 'PAIR')
+  eyeSide             String?           // 'Right', 'Left'
+  sphere              Float?            // SPH
+  cylinder            Float?            // CYL
+  axis                Float?
+  addition            Float?            // ADD
+  diameter            Float?            // Dia
+  dpd                 Float?
+  npd                 Float?
+  hPrism              Float?
+  hBase               String?
+  vPrism              Float?
+  vBase               String?
+  fh                  Float?
+  remarks             String?
+
+  unitPrice           Float             @default(0)
+  subtotal            Float             @default(0)
+  createdAt           DateTime          @default(now())
+
+  @@map("order_lens_items")
+}
+
+model StockLensVariant {
+  id              String    @id @default(uuid())
+  productId       String?
+  sphere          Float     // rows: -6.00 to +6.00
+  cylinder        Float     // columns: 0.00 to -4.00
+  stockQuantity   Int       @default(0)
+  treatment       String?   // 'UNC', 'HC', 'HMC', 'Super HMC', 'Anti-Fog HMC'
+  coating         String?
+  refractiveIndex Float?
+  sellingPrice    Float     @default(0)
+  costPrice       Float     @default(0)
+  sku             String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@map("stock_lens_variants")
+}

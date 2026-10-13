@@ -1727,24 +1727,7 @@ function initMachineScene(
       aria-label="Interactive 3D machine with five stations: Engine, Admin, Storefront, Cabinet and Checkout. Drag to rotate, scroll or pinch to zoom. Hover or tap a station to take a closer look."
     />
     <div class="vignette" />
-    <header class="topbar debug-ui">
-      <div class="identity">
-        <div class="mark">
-          <svg width="17" height="17" viewBox="0 0 20 20" fill="none">
-            <path
-              d="M3 5l7 11 7-11M7 5l3 5 3-5"
-              stroke="currentColor"
-              stroke-width="1.7"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-        </div>
-        <div>
-          <strong>Agentic Factory</strong>
-          <small>Interactive workshop</small>
-        </div>
-      </div>
+    <header class="topbar debug-ui" style="justify-content: flex-end;">
       <div class="status" id="status">
         <i />
         <span id="status-text">Machine running</span>
@@ -1842,9 +1825,9 @@ function initMachineScene(
     </div>
     <footer class="footer">
       <a class="wordmark" href="https://vibecoding.tech" target="_blank" rel="noopener">
-        made with AI agents · <span>vibecoding.tech</span>
+        
       </a>
-      <span class="footer-center debug-ui">DESIGNED BY YOU</span>
+      <span class="footer-center debug-ui">DESIGNED BY SANA</span>
       <span class="hint debug-ui">
         <svg width="13" height="16" viewBox="0 0 13 16" fill="none">
           <rect x="2" y="1" width="9" height="14" rx="4.5" stroke="currentColor" />

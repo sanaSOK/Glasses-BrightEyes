@@ -343,12 +343,282 @@ async function main() {
     },
   });
 
+  // 7. Seed Lens Brands & Master Lens Products with Matrix Inventory Grids
+  console.log('👓 Seeding Lens Brands & Matrix Inventory Grids...');
+
+  await prisma.lensOrderItem.deleteMany();
+  await prisma.lensOrder.deleteMany();
+  await prisma.lensVariant.deleteMany();
+  await prisma.lensProduct.deleteMany();
+  await prisma.brand.deleteMany();
+
+  const brandData = [
+    { name: 'KN Optical', code: 'KNO', description: 'Premier supplier of precision prescription bifocals and optical blanks.' },
+    { name: '101 Optical', code: '101O', description: 'High performance sports polarized sunglasses and tinted Rx lenses.' },
+    { name: 'Hoya', code: 'HOYA', description: 'Japanese advanced free-form design and anti-reflective blue control lenses.' },
+    { name: 'Zeiss', code: 'ZEISS', description: 'German precision optical technology, super-thin 1.74 and custom progressives.' },
+    { name: 'Essilor', code: 'ESS', description: 'World leader in Varilux progressive lenses and Crizal Sapphire coatings.' },
+    { name: 'BlueCut', code: 'BLUE', description: 'Specialized digital screen protection and moisture-rich hydrogel contact lenses.' },
+  ];
+
+  const brandMap: { [name: string]: any } = {};
+  for (const b of brandData) {
+    const createdBrand = await prisma.brand.create({ data: b });
+    brandMap[b.name] = createdBrand;
+  }
+
+  // Helper function to create matrix grid variants
+  async function seedMatrixGrid(
+    lensProdId: string,
+    skuPrefix: string,
+    spheres: number[],
+    cols: number[],
+    colType: 'C' | 'ADD',
+    eyeSides: string[] = ['PAIR'],
+    baseCost: number = 20,
+    basePrice: number = 45
+  ) {
+    for (const sph of spheres) {
+      for (const colVal of cols) {
+        for (const eye of eyeSides) {
+          const formattedSph = (sph >= 0 ? '+' : '') + sph.toFixed(2);
+          const formattedCol = (colVal >= 0 ? '+' : '') + colVal.toFixed(2);
+          const sku = `${skuPrefix}-S${formattedSph}-${colType}${formattedCol}-${eye}`;
+          const stock = Math.floor(Math.random() * 25) + 3; // random realistic stock
+          const colorHex = stock > 15 ? '#10b981' : stock > 5 ? '#f59e0b' : '#ef4444';
+
+          await prisma.lensVariant.create({
+            data: {
+              lensProductId: lensProdId,
+              sphere: sph,
+              cylinder: colType === 'C' ? colVal : null,
+              addPower: colType === 'ADD' ? colVal : null,
+              eyeSide: eye,
+              sku: sku,
+              code: `${colType}${formattedCol}`,
+              quantity: stock,
+              quantityR: eye === 'R' ? stock : Math.floor(stock / 2),
+              quantityL: eye === 'L' ? stock : Math.floor(stock / 2),
+              costPrice: baseCost,
+              sellingPrice: basePrice,
+              minStock: 5,
+              maxStock: 50,
+              cellColor: colorHex,
+            },
+          });
+        }
+      }
+    }
+  }
+
+  // 1. Single Vision Lens Product
+  const svProduct = await prisma.lensProduct.create({
+    data: {
+      SKU: 'LNS-SV-ESS-156',
+      name: 'Essilor Crizal Single Vision 1.56 HMC',
+      description: 'Standard single vision spherical lens with anti-scratch and multi-layer coating.',
+      brandId: brandMap['Essilor'].id,
+      lensType: 'Single Vision',
+      refractiveIndex: 1.56,
+      coating: 'HMC',
+      material: 'CR-39 Plastic',
+      designType: 'Spheric',
+      tintColor: 'Clear',
+      uvProtection: 'UV400',
+      isPolarized: false,
+      antiGlare: true,
+      scratchResistant: true,
+      price: 45,
+      costPrice: 20,
+    },
+  });
+  await seedMatrixGrid(
+    svProduct.id,
+    'SV-ESS',
+    [-6.00, -4.00, -2.00, 0.00, +2.00, +4.00], // Spheres
+    [0.00, -0.75, -1.50, -2.25, -3.00],         // Cylinders
+    'C',
+    ['PAIR'],
+    20,
+    45
+  );
+
+  // 2. Bifocal Lens Product
+  const bfProduct = await prisma.lensProduct.create({
+    data: {
+      SKU: 'LNS-BF-KNO-150',
+      name: 'KN Optical Flat-Top 28 Bifocal 1.50',
+      description: 'Classic Flat-Top D28 segment bifocal lens for distant and reading vision.',
+      brandId: brandMap['KN Optical'].id,
+      lensType: 'Bifocal',
+      refractiveIndex: 1.50,
+      coating: 'HC',
+      material: 'CR-39 Plastic',
+      designType: 'Spheric',
+      tintColor: 'Clear',
+      uvProtection: 'UV380',
+      isPolarized: false,
+      scratchResistant: true,
+      price: 65,
+      costPrice: 28,
+    },
+  });
+  await seedMatrixGrid(
+    bfProduct.id,
+    'BF-KNO',
+    [-4.00, -2.00, 0.00, +2.00, +4.00], // Spheres
+    [+1.00, +1.50, +2.00, +2.50, +3.00, +3.50], // ADD Powers
+    'ADD',
+    ['PAIR'],
+    28,
+    65
+  );
+
+  // 3. Progressive Lens Product (Supports Right / Left Laterality)
+  const progProduct = await prisma.lensProduct.create({
+    data: {
+      SKU: 'LNS-PRG-ZEI-161',
+      name: 'Zeiss Precision Superb Progressive 1.61 FreeForm',
+      description: 'Ultra-clear digital freeform progressive lens with wide corridor for clear intermediate vision.',
+      brandId: brandMap['Zeiss'].id,
+      lensType: 'Progressive',
+      refractiveIndex: 1.61,
+      coating: 'SHMC',
+      material: 'Polycarbonate',
+      designType: 'Free form',
+      tintColor: 'Clear',
+      uvProtection: 'UV420',
+      isPolarized: false,
+      antiGlare: true,
+      antiBlueLight: true,
+      scratchResistant: true,
+      waterResistant: true,
+      price: 180,
+      costPrice: 85,
+    },
+  });
+  await seedMatrixGrid(
+    progProduct.id,
+    'PRG-ZEI',
+    [-4.00, -2.00, 0.00, +2.00], // Spheres
+    [+1.00, +1.50, +2.00, +2.50, +3.00], // ADD Powers
+    'ADD',
+    ['R', 'L'], // Progressive Laterality
+    85,
+    180
+  );
+
+  // 4. Contact Lens Product
+  const clProduct = await prisma.lensProduct.create({
+    data: {
+      SKU: 'LNS-CTL-BLU-HYD',
+      name: 'BlueCut Comfort Moisture Hydrogel Contact Lens',
+      description: 'Breathable monthly soft contact lens with high water retention and UV blocking.',
+      brandId: brandMap['BlueCut'].id,
+      lensType: 'Contact Lens',
+      material: 'Silicon Hydrogel',
+      tintColor: 'Soft Blue Visibility Tint',
+      uvProtection: 'UV400',
+      baseCurve: 8.6,
+      diameter: 14.2,
+      waterContent: '58%',
+      usageType: 'Monthly',
+      myopiaControl: true,
+      price: 35,
+      costPrice: 15,
+    },
+  });
+  // Contact Lenses indexed by Sphere S
+  await seedMatrixGrid(
+    clProduct.id,
+    'CTL-BLU',
+    [-8.00, -6.00, -4.00, -2.00, -1.00, -0.50], // Spheres
+    [0.00], // Spherical contact lens
+    'C',
+    ['PAIR'],
+    15,
+    35
+  );
+
+  // 5. Sunglass Lens Product
+  const sgProduct = await prisma.lensProduct.create({
+    data: {
+      SKU: 'LNS-SNG-101-POL',
+      name: '101 Optical Polarized G-15 Sunglass Lens 1.50',
+      description: 'Premium polarized sun lens eliminating glare with maximum contrast enhancement.',
+      brandId: brandMap['101 Optical'].id,
+      lensType: 'Sunglass',
+      refractiveIndex: 1.50,
+      coating: 'MC',
+      material: 'Polycarbonate',
+      designType: 'Sportive',
+      tintColor: 'G-15 Dark Green',
+      uvProtection: 'UV400',
+      isPolarized: true,
+      scratchResistant: true,
+      waterResistant: true,
+      price: 95,
+      costPrice: 40,
+    },
+  });
+  await seedMatrixGrid(
+    sgProduct.id,
+    'SNG-101',
+    [-4.00, -2.00, 0.00, +2.00], // Spheres
+    [0.00, -0.75, -1.50, -2.00],  // Cylinders
+    'C',
+    ['PAIR'],
+    40,
+    95
+  );
+
+  // 6. Create sample Lens Order
+  const sampleLensOrder = await prisma.lensOrder.create({
+    data: {
+      invoiceNumber: 'LENS-INV-20261010-001',
+      customerName: 'Chea Vandy',
+      customerPhone: '+85512888777',
+      subtotal: 360,
+      discount: 20,
+      total: 340,
+      status: 'COMPLETED',
+      notes: 'Customer prescription for Zeiss Progressive lenses R/L pair.',
+      orderItems: {
+        create: [
+          {
+            lensProductId: progProduct.id,
+            productName: progProduct.name,
+            sphere: -2.00,
+            addPower: +2.00,
+            eyeSide: 'R',
+            axis: 90,
+            quantity: 1,
+            unitPrice: 180,
+            subtotal: 180,
+          },
+          {
+            lensProductId: progProduct.id,
+            productName: progProduct.name,
+            sphere: -2.00,
+            addPower: +2.00,
+            eyeSide: 'L',
+            axis: 85,
+            quantity: 1,
+            unitPrice: 180,
+            subtotal: 180,
+          },
+        ],
+      },
+    },
+  });
+
   console.log('✅ BrightEyes Seed Data Successfully Created!');
   console.log('========================================================');
   console.log('👑 Super Admin:   admin@brighteyes.com / password123');
   console.log('🏬 Wholesaler 1:  wholesaler1@brighteyes.com / password123');
   console.log('🏬 Wholesaler 2:  wholesaler2@brighteyes.com / password123');
   console.log('👓 Retailer 1-5:  retailer1@brighteyes.com / password123');
+  console.log('👓 Lens Brands & Matrix Grid Seeding Complete!');
   console.log('========================================================');
 }
 
@@ -360,3 +630,4 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+

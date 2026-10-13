@@ -10,9 +10,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // Security & Middlewares
-  app.use(helmet());
+  app.use(helmet({ crossOriginResourcePolicy: false }));
   app.enableCors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    origin: true,
     credentials: true,
   });
 
@@ -57,7 +57,7 @@ async function bootstrap() {
   SwaggerModule.setup('api/docs', app, document);
 
   const port = process.env.PORT || 3000;
-  await app.listen(port);
+  await app.listen(port, '0.0.0.0');
   console.log(`🚀 BrightEyes Backend Server is running on http://localhost:${port}/api`);
   console.log(`📚 Swagger Documentation is available on http://localhost:${port}/api/docs`);
 }

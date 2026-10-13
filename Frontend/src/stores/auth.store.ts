@@ -3,10 +3,26 @@ import { ref, computed } from 'vue';
 import { authService, type LoginPayload, type RegisterPayload } from '@/services/auth.service';
 import type { User, Role } from '@/types';
 
+// Clean up any legacy bypass tokens from development
+if (typeof window !== 'undefined') {
+  const currentToken = localStorage.getItem('brighteyes_access_token');
+  if (currentToken === 'bypass-admin-token') {
+    localStorage.removeItem('brighteyes_access_token');
+    localStorage.removeItem('brighteyes_refresh_token');
+    localStorage.removeItem('brighteyes_user');
+  }
+}
+
 export const useAuthStore = defineStore('auth', () => {
-  const user = ref<User | null>(JSON.parse(localStorage.getItem('brighteyes_user') || 'null'));
-  const accessToken = ref<string | null>(localStorage.getItem('brighteyes_access_token'));
-  const refreshToken = ref<string | null>(localStorage.getItem('brighteyes_refresh_token'));
+  const user = ref<User | null>(
+    JSON.parse(localStorage.getItem('brighteyes_user') || 'null')
+  );
+  const accessToken = ref<string | null>(
+    localStorage.getItem('brighteyes_access_token')
+  );
+  const refreshToken = ref<string | null>(
+    localStorage.getItem('brighteyes_refresh_token')
+  );
   const loading = ref(false);
   const error = ref<string | null>(null);
 
@@ -75,7 +91,11 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   function logout() {
-    authService.logout();
+    try {
+      authService.logout();
+    } catch {
+      // ignore
+    }
     user.value = null;
     accessToken.value = null;
     refreshToken.value = null;

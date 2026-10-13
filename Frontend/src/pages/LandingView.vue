@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-sky-500 selection:text-white">
+  <div class="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-sky-500 selection:text-white scroll-smooth">
     <!-- Top Navigation Header -->
     <header class="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800/80 px-6 py-4">
       <div class="max-w-7xl mx-auto flex items-center justify-between">
@@ -18,21 +18,39 @@
           <a href="#how-it-works" class="hover:text-sky-400 transition-colors">How It Works</a>
         </nav>
 
-        <!-- Auth Action Buttons -->
-        <div class="flex items-center gap-3">
-          <router-link
-            to="/login"
-            class="px-5 py-2.5 rounded-xl border border-sky-500/40 text-sky-300 hover:bg-sky-500/10 font-bold text-xs transition-all shadow-sm flex items-center gap-2"
-          >
-            <LogIn class="w-4 h-4" />
-            <span>Sign In</span>
-          </router-link>
-          <router-link
-            to="/register"
-            class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white font-bold text-xs shadow-lg shadow-sky-500/25 transition-all active:scale-95"
-          >
-            Register Store
-          </router-link>
+        <!-- Auth & Portal Action Buttons -->
+        <div class="flex items-center gap-2 sm:gap-3">
+          <template v-if="authStore.isAuthenticated">
+            <router-link
+              :to="userDashboardRoute"
+              class="px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs shadow-md shadow-sky-600/30 transition-all flex items-center gap-1.5"
+            >
+              <span>{{ userDashboardLabel }}</span>
+            </router-link>
+            <button
+              @click="authStore.logout()"
+              class="px-3.5 py-2.5 rounded-xl border border-slate-700/80 hover:bg-slate-800 text-slate-300 hover:text-white font-bold text-xs transition-all flex items-center gap-1.5 cursor-pointer"
+              title="Sign Out"
+            >
+              <LogOut class="w-3.5 h-3.5 text-rose-400" />
+              <span>Logout</span>
+            </button>
+          </template>
+          <template v-else>
+            <router-link
+              to="/login"
+              class="px-4 py-2.5 rounded-xl border border-sky-500/40 text-sky-300 hover:bg-sky-500/10 font-bold text-xs transition-all shadow-sm flex items-center gap-2"
+            >
+              <LogIn class="w-4 h-4" />
+              <span>Sign In</span>
+            </router-link>
+            <router-link
+              to="/register"
+              class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white font-bold text-xs shadow-lg shadow-sky-500/25 transition-all active:scale-95"
+            >
+              Register Store
+            </router-link>
+          </template>
         </div>
       </div>
     </header>
@@ -57,24 +75,6 @@
           Connect your optical retail store directly with leading Cambodian optical wholesalers. Browse live stock levels for frames, sunglasses, contact lenses, and prescription lenses with transparent pricing and fast delivery.
         </p>
 
-        <!-- CTA Button Group -->
-        <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <router-link
-            to="/login"
-            class="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-sky-500 via-cyan-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white font-black text-sm shadow-xl shadow-sky-500/30 transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-3"
-          >
-            <span>Sign In to Platform</span>
-            <ArrowRight class="w-5 h-5" />
-          </router-link>
-          <router-link
-            to="/register"
-            class="w-full sm:w-auto px-8 py-4 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 text-slate-200 font-bold text-sm transition-all flex items-center justify-center gap-2 backdrop-blur-md"
-          >
-            <Building2 class="w-5 h-5 text-sky-400" />
-            <span>Register New Business Account</span>
-          </router-link>
-        </div>
-
         <!-- Live Platform Metrics -->
         <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
           <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800/80 backdrop-blur-md">
@@ -98,7 +98,7 @@
     </ImageStreamHero>
 
     <!-- 3D Interactive Workshop Section -->
-    <section class="py-16 px-6 bg-black border-y border-slate-800 relative overflow-hidden">
+    <section id="how-it-works" class="py-16 px-6 bg-black border-y border-slate-800 relative overflow-hidden scroll-mt-20">
       <div class="max-w-7xl mx-auto mb-8 text-center">
         <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-extrabold uppercase tracking-wider mb-3">
           <Sparkles class="w-4 h-4 text-amber-400" />
@@ -116,7 +116,7 @@
     </section>
 
     <!-- Platform Features Section -->
-    <section id="features" class="py-20 px-6 bg-slate-900/50 border-y border-slate-800/60">
+    <section id="features" class="py-20 px-6 bg-slate-900/50 border-y border-slate-800/60 scroll-mt-20">
       <div class="max-w-7xl mx-auto">
         <div class="text-center mb-16">
           <h2 class="text-3xl font-black text-white">Engineered for the Cambodian Optical Industry</h2>
@@ -161,7 +161,7 @@
     </section>
 
     <!-- Optical Categories Section with Elastic Accordion Gallery -->
-    <section id="categories" class="py-20 px-6 bg-slate-950 border-t border-slate-800/80 relative overflow-hidden">
+    <section id="categories" class="py-20 px-6 bg-slate-950 border-t border-slate-800/80 relative overflow-hidden scroll-mt-20">
       <!-- Background Ambient Glow -->
       <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-sky-600/10 rounded-full blur-[160px] pointer-events-none"></div>
 
@@ -189,7 +189,7 @@
     </section>
 
     <!-- Verified Wholesalers Section -->
-    <section id="wholesalers" class="py-20 px-6 bg-slate-900/40 border-t border-slate-800/60">
+    <section id="wholesalers" class="py-20 px-6 bg-slate-900/40 border-t border-slate-800/60 scroll-mt-20">
       <div class="max-w-7xl mx-auto text-center">
         <h2 class="text-3xl font-black text-white mb-3">Verified Cambodian Optical Wholesalers</h2>
         <p class="text-xs text-slate-400 max-w-xl mx-auto mb-12">
@@ -353,11 +353,27 @@
 </template>
 
 <script setup lang="ts">
-import { Glasses, Sparkles, ArrowRight, Building2, Boxes, ShieldCheck, Truck, LogIn, Eye, Sun, Disc, Layers, Wrench, Phone, Mail, MapPin } from 'lucide-vue-next';
+import { computed } from 'vue';
+import { useAuthStore } from '@/stores/auth.store';
+import { Glasses, Sparkles, ArrowRight, Boxes, ShieldCheck, Truck, LogIn, LogOut, Eye, Sun, Disc, Layers, Wrench, Phone, Mail, MapPin } from 'lucide-vue-next';
 import AgenticFactory3D from '@/components/ui/AgenticFactory3D.vue';
 import ImageStreamHero from '@/components/ui/ImageStreamHero.vue';
 import ElasticGallery from '@/components/ui/ElasticGallery.vue';
 import brandLogo from '@/assets/logo.png';
+
+const authStore = useAuthStore();
+
+const userDashboardRoute = computed(() => {
+  if (authStore.role === 'SUPER_ADMIN') return '/admin';
+  if (authStore.role === 'WHOLESALER') return '/wholesaler';
+  return '/retailer';
+});
+
+const userDashboardLabel = computed(() => {
+  if (authStore.role === 'SUPER_ADMIN') return 'Admin Dashboard';
+  if (authStore.role === 'WHOLESALER') return 'Wholesaler Portal';
+  return 'Retailer Dashboard';
+});
 
 const heroImages = [
   { src: 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=800&q=80', alt: 'Sunglasses' },
