@@ -83,6 +83,8 @@ model Wholesaler {
   email           String?
   logoUrl         String?
   description     String?
+  latitude        Float?
+  longitude       Float?
   status          String   @default("ACTIVE")
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -104,6 +106,8 @@ model Retailer {
   district     String
   phone        String
   email        String?
+  latitude     Float?
+  longitude    Float?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -124,6 +128,8 @@ model Store {
   province   String
   district   String
   phone      String
+  latitude   Float?
+  longitude  Float?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
@@ -292,6 +298,8 @@ model Delivery {
   commune         String?
   phone           String
   trackingNumber  String?
+  latitude        Float?
+  longitude       Float?
   status          DeliveryStatus @default(PENDING)
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
@@ -531,20 +539,4 @@ model OrderLensItem {
   @@map("order_lens_items")
 }
 
-model StockLensVariant {
-  id              String    @id @default(uuid())
-  productId       String?
-  sphere          Float     // rows: -6.00 to +6.00
-  cylinder        Float     // columns: 0.00 to -4.00
-  stockQuantity   Int       @default(0)
-  treatment       String?   // 'UNC', 'HC', 'HMC', 'Super HMC', 'Anti-Fog HMC'
-  coating         String?
-  refractiveIndex Float?
-  sellingPrice    Float     @default(0)
-  costPrice       Float     @default(0)
-  sku             String?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
 
-  @@map("stock_lens_variants")
-}

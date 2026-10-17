@@ -26,13 +26,25 @@
 
       <div>
         <label class="block text-xs font-bold text-slate-700 mb-1">Password</label>
-        <input
-          v-model="password"
-          type="password"
-          required
-          placeholder="••••••••"
-          class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
-        />
+        <div class="relative">
+          <input
+            v-model="password"
+            :type="showPassword ? 'text' : 'password'"
+            required
+            placeholder="••••••••"
+            class="w-full pl-4 pr-11 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500"
+          />
+          <button
+            type="button"
+            @click="showPassword = !showPassword"
+            class="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 focus:outline-none transition-colors cursor-pointer"
+            :title="showPassword ? 'Hide password' : 'Show password'"
+            tabindex="-1"
+          >
+            <EyeOff v-if="showPassword" class="w-4 h-4" />
+            <Eye v-else class="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       <button
@@ -44,34 +56,7 @@
       </button>
     </form>
 
-    <!-- Role Pre-Filled Quick Demo Logins -->
-    <div class="mt-6 pt-5 border-t border-slate-100">
-      <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider text-center mb-3">Pre-Configured Demo Accounts</p>
-      
-      <div class="space-y-2">
-        <button
-          @click="fillCredentials('admin@brighteyes.com', 'password123')"
-          class="w-full text-left px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold flex items-center justify-between border border-slate-300/60"
-        >
-          <span>👑 Super Admin: System Admin</span>
-          <span class="text-[10px] bg-slate-300 px-1.5 py-0.5 rounded font-bold">Admin</span>
-        </button>
-        <button
-          @click="fillCredentials('wholesaler1@brighteyes.com', 'password123')"
-          class="w-full text-left px-3 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-800 text-xs font-semibold flex items-center justify-between border border-purple-200/60"
-        >
-          <span>🏬 Wholesaler: Sokha Optical Supply</span>
-          <span class="text-[10px] bg-purple-200 px-1.5 py-0.5 rounded font-bold">Wholesaler</span>
-        </button>
-        <button
-          @click="fillCredentials('retailer1@brighteyes.com', 'password123')"
-          class="w-full text-left px-3 py-2 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-800 text-xs font-semibold flex items-center justify-between border border-sky-200/60"
-        >
-          <span>👓 Retailer: Phnom Penh Eyewear</span>
-          <span class="text-[10px] bg-sky-200 px-1.5 py-0.5 rounded font-bold">Retailer</span>
-        </button>
-      </div>
-    </div>
+
 
     <!-- Register Link -->
     <div class="mt-6 text-center text-xs text-slate-500">
@@ -84,10 +69,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth.store';
-import { Glasses } from 'lucide-vue-next';
+import { Eye, EyeOff } from 'lucide-vue-next';
 import brandLogo from '@/assets/logo.png';
 
 const authStore = useAuthStore();
@@ -96,31 +81,10 @@ const router = useRouter();
 
 const email = ref('');
 const password = ref('');
+const showPassword = ref(false);
 const loading = ref(false);
 const errorMessage = ref('');
-const activeRole = ref<number>(1);
 
-onMounted(() => {
-  const rParam = route.query.role;
-  if (rParam === '2' || rParam === 'wholesaler' || rParam === 'WHOLESALER') {
-    activeRole.value = 2;
-    email.value = 'wholesaler1@brighteyes.com';
-    password.value = 'password123';
-  } else if (rParam === '3' || rParam === 'admin' || rParam === 'SUPER_ADMIN') {
-    activeRole.value = 3;
-    email.value = 'admin@brighteyes.com';
-    password.value = 'password123';
-  } else if (rParam === '1' || rParam === 'retailer' || rParam === 'RETAILER') {
-    activeRole.value = 1;
-    email.value = 'retailer1@brighteyes.com';
-    password.value = 'password123';
-  }
-});
-
-const fillCredentials = (e: string, p: string) => {
-  email.value = e;
-  password.value = p;
-};
 
 const handleLogin = async () => {
   loading.value = true;

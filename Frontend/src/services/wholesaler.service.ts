@@ -21,4 +21,9 @@ export const wholesalerService = {
     const res = await api.patch('/wholesalers/profile', data);
     return res.data.data || res.data;
   },
+
+  async getMapLocations(): Promise<any> {
+    const res = await api.get('/wholesalers/locations/map');
+    return res.data.data || res.data;
+  },
 };

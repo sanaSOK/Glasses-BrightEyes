@@ -15,6 +15,10 @@
           <a href="#features" class="hover:text-sky-400 transition-colors">Platform Features</a>
           <a href="#categories" class="hover:text-sky-400 transition-colors">Optical Categories</a>
           <a href="#wholesalers" class="hover:text-sky-400 transition-colors">Verified Wholesalers</a>
+          <a href="#cambodia-map" class="hover:text-sky-400 transition-colors flex items-center gap-1.5 text-sky-400">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            Cambodia Map
+          </a>
           <a href="#how-it-works" class="hover:text-sky-400 transition-colors">How It Works</a>
         </nav>
 
@@ -222,6 +226,13 @@
       </div>
     </section>
 
+    <!-- Real Interactive Cambodia Optical Map Section -->
+    <section id="cambodia-map" class="py-20 px-6 bg-slate-950 border-t border-slate-800/80 relative scroll-mt-20">
+      <div class="max-w-7xl mx-auto">
+        <RealCambodiaMap />
+      </div>
+    </section>
+
     <!-- CTA Section -->
     <section class="py-20 px-6 relative">
       <div class="max-w-4xl mx-auto rounded-3xl bg-gradient-to-r from-sky-600 to-cyan-600 p-8 sm:p-12 text-center text-white shadow-2xl shadow-sky-600/30">
@@ -298,6 +309,7 @@
                 <li><a href="#features">Platform Features</a></li>
                 <li><a href="#categories">Product Categories</a></li>
                 <li><a href="#wholesalers">Verified Wholesalers</a></li>
+                <li><a href="#cambodia-map">Cambodia Optical Map</a></li>
                 <li><a href="/login">Platform Sign In</a></li>
                 <li><a href="/register">Register Store</a></li>
               </ul>
@@ -359,6 +371,7 @@ import { Glasses, Sparkles, ArrowRight, Boxes, ShieldCheck, Truck, LogIn, LogOut
 import AgenticFactory3D from '@/components/ui/AgenticFactory3D.vue';
 import ImageStreamHero from '@/components/ui/ImageStreamHero.vue';
 import ElasticGallery from '@/components/ui/ElasticGallery.vue';
+import RealCambodiaMap from '@/components/common/RealCambodiaMap.vue';
 import brandLogo from '@/assets/logo.png';
 
 const authStore = useAuthStore();

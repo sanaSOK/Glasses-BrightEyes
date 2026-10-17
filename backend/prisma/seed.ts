@@ -57,6 +57,8 @@ async function main() {
       email: 'sales@sokhaoptical.com',
       description: 'Leading Cambodian distributor of premium eyewear frames, luxury sunglasses, and ophthalmic equipment.',
       logoUrl: 'https://images.unsplash.com/photo-1591076482161-42ce6da69f67?auto=format&fit=crop&w=300&q=80',
+      latitude: 11.5492,
+      longitude: 104.9248,
     },
   });
 
@@ -81,17 +83,19 @@ async function main() {
       email: 'contact@angkorlens.com.kh',
       description: 'Authorized importer of high-index optical lenses, soft contact lenses, and precision optometric machinery.',
       logoUrl: 'https://images.unsplash.com/photo-1508296695146-257a814070b4?auto=format&fit=crop&w=300&q=80',
+      latitude: 11.5645,
+      longitude: 104.9085,
     },
   });
 
   // 3. Create 5 Retailers with Stores & Carts
   const retailers = [];
   const retailerConfigs = [
-    { email: 'retailer1@brighteyes.com', name: 'Phnom Penh Eyewear Center', store: 'Phnom Penh Eyewear Center', address: 'St 271, Sen Sok', province: 'Phnom Penh', district: 'Khan Sen Sok' },
-    { email: 'retailer2@brighteyes.com', name: 'Siem Reap Vision Care', store: 'Siem Reap Vision Care Clinic', address: 'Sivutha Blvd, Siem Reap', province: 'Siem Reap', district: 'Krong Siem Reap' },
-    { email: 'retailer3@brighteyes.com', name: 'Battambang Optical House', store: 'Battambang Optical House', address: 'Street 3, Battambang', province: 'Battambang', district: 'Krong Battambang' },
-    { email: 'retailer4@brighteyes.com', name: 'Sihanoukville Bright Vision', store: 'Sihanoukville Bright Vision Shop', address: 'Ekareach Street, Sihanoukville', province: 'Preah Sihanouk', district: 'Krong Preah Sihanouk' },
-    { email: 'retailer5@brighteyes.com', name: 'Kampot Optics & Style', store: 'Kampot Optics & Style Store', address: 'Riverside Road, Kampot', province: 'Kampot', district: 'Krong Kampot' },
+    { email: 'retailer1@brighteyes.com', name: 'Phnom Penh Eyewear Center', store: 'Phnom Penh Eyewear Center', address: 'St 271, Sen Sok', province: 'Phnom Penh', district: 'Khan Sen Sok', latitude: 11.5689, longitude: 104.8912 },
+    { email: 'retailer2@brighteyes.com', name: 'Siem Reap Vision Care', store: 'Siem Reap Vision Care Clinic', address: 'Sivutha Blvd, Siem Reap', province: 'Siem Reap', district: 'Krong Siem Reap', latitude: 13.3633, longitude: 103.8564 },
+    { email: 'retailer3@brighteyes.com', name: 'Battambang Optical House', store: 'Battambang Optical House', address: 'Street 3, Battambang', province: 'Battambang', district: 'Krong Battambang', latitude: 13.0975, longitude: 103.2008 },
+    { email: 'retailer4@brighteyes.com', name: 'Sihanoukville Bright Vision', store: 'Sihanoukville Bright Vision Shop', address: 'Ekareach Street, Sihanoukville', province: 'Preah Sihanouk', district: 'Krong Preah Sihanouk', latitude: 10.6275, longitude: 103.5221 },
+    { email: 'retailer5@brighteyes.com', name: 'Kampot Optics & Style', store: 'Kampot Optics & Style Store', address: 'Riverside Road, Kampot', province: 'Kampot', district: 'Krong Kampot', latitude: 10.6089, longitude: 104.1802 },
   ];
 
   for (const cfg of retailerConfigs) {
@@ -114,6 +118,8 @@ async function main() {
         district: cfg.district,
         phone: '+85512999888',
         email: cfg.email,
+        latitude: cfg.latitude,
+        longitude: cfg.longitude,
       },
     });
 
@@ -125,6 +131,8 @@ async function main() {
         province: cfg.province,
         district: cfg.district,
         phone: '+85512999888',
+        latitude: cfg.latitude,
+        longitude: cfg.longitude,
       },
     });
 

@@ -59,4 +59,12 @@ export class RegisterDto {
   @IsOptional()
   @IsString()
   district?: string;
+
+  @ApiPropertyOptional({ example: 11.5564 })
+  @IsOptional()
+  latitude?: number;
+
+  @ApiPropertyOptional({ example: 104.9282 })
+  @IsOptional()
+  longitude?: number;
 }

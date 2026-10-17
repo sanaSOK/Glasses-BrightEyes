@@ -52,9 +52,12 @@ export class AuthService {
         },
       });
 
+      const geoTag = (dto.latitude && dto.longitude) ? ` [geo:${dto.latitude},${dto.longitude}]` : '';
+
       if (resolvedRole === Role.WHOLESALER) {
         const companyName = dto.companyName || `${dto.name} Optical Wholesale`;
-        const businessAddress = dto.businessAddress || 'Phnom Penh, Cambodia';
+        const rawAddress = dto.businessAddress || 'Phnom Penh, Cambodia';
+        const businessAddress = rawAddress + geoTag;
         const province = dto.province || 'Phnom Penh';
         const district = dto.district || 'Chamkar Mon';
 
@@ -71,7 +74,8 @@ export class AuthService {
         });
       } else if (resolvedRole === Role.RETAILER) {
         const storeName = dto.storeName || `${dto.name} Optical Store`;
-        const storeAddress = dto.storeAddress || 'Phnom Penh, Cambodia';
+        const rawAddress = dto.storeAddress || 'Phnom Penh, Cambodia';
+        const storeAddress = rawAddress + geoTag;
         const province = dto.province || 'Phnom Penh';
         const district = dto.district || 'Toul Kork';
 

@@ -18,6 +18,12 @@ export class WholesalersController {
     return this.wholesalersService.findAll();
   }
 
+  @Get('locations/map')
+  @ApiOperation({ summary: 'Get Cambodia map locations for Admin, Wholesalers, and Retailers' })
+  async getMapLocations() {
+    return this.wholesalersService.getMapLocations();
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get wholesaler profile details by ID' })
   async findOne(@Param('id') id: string) {

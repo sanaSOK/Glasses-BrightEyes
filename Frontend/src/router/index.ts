@@ -71,6 +71,11 @@ const router = createRouter({
           name: 'admin-lenses',
           component: () => import('@/pages/admin/LensAdminDashboard.vue'),
         },
+        {
+          path: 'map',
+          name: 'admin-map',
+          component: () => import('@/pages/common/CambodiaMapView.vue'),
+        },
       ],
     },
 
@@ -99,6 +104,11 @@ const router = createRouter({
           path: 'orders',
           name: 'wholesaler-orders',
           component: () => import('@/pages/wholesaler/OrdersView.vue'),
+        },
+        {
+          path: 'map',
+          name: 'wholesaler-map',
+          component: () => import('@/pages/common/CambodiaMapView.vue'),
         },
         {
           path: 'profile',
@@ -143,6 +153,11 @@ const router = createRouter({
           path: 'inventory',
           name: 'retailer-inventory',
           component: () => import('@/pages/retailer/InventoryView.vue'),
+        },
+        {
+          path: 'map',
+          name: 'retailer-map',
+          component: () => import('@/pages/common/CambodiaMapView.vue'),
         },
         {
           path: 'profile',

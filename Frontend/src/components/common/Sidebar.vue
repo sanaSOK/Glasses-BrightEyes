@@ -132,6 +132,7 @@ import {
   Grid,
   ChevronLeft,
   ChevronRight,
+  MapPin,
 } from 'lucide-vue-next';
 
 const authStore = useAuthStore();
@@ -148,6 +149,7 @@ const navItems = computed(() => {
     return [
       { name: 'Dashboard', path: '/admin', icon: LayoutDashboard },
       { name: 'Lens Matrix POS', path: '/admin/lenses', icon: Grid },
+      { name: 'Cambodia Optical Map', path: '/admin/map', icon: MapPin },
       { name: 'Users', path: '/admin/users', icon: Users },
       { name: 'Wholesalers', path: '/admin/wholesalers', icon: Building2 },
       { name: 'Categories', path: '/admin/categories', icon: FolderTree },
@@ -159,6 +161,7 @@ const navItems = computed(() => {
   if (currentPortal.value === 'WHOLESALER') {
     return [
       { name: 'Dashboard', path: '/wholesaler', icon: LayoutDashboard },
+      { name: 'Cambodia Optical Map', path: '/wholesaler/map', icon: MapPin },
       { name: 'My Products', path: '/wholesaler/products', icon: Package },
       { name: 'Live Inventory', path: '/wholesaler/inventory', icon: Boxes },
       { name: 'Incoming Orders', path: '/wholesaler/orders', icon: ClipboardList },
@@ -169,6 +172,7 @@ const navItems = computed(() => {
   // Retailer
   return [
     { name: 'Dashboard', path: '/retailer', icon: LayoutDashboard },
+    { name: 'Cambodia Optical Map', path: '/retailer/map', icon: MapPin },
     { name: 'Optical Catalog', path: '/retailer/products', icon: Package },
     { name: 'Wholesalers', path: '/retailer/wholesalers', icon: Building2 },
     { name: 'Shopping Cart', path: '/retailer/cart', icon: ShoppingCart, badge: cartStore.itemCount },
