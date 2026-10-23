@@ -620,6 +620,121 @@ async function main() {
     },
   });
 
+  // 6. Seed Frame Platform wireframe demo (Oleva OLV1201 & RayBan)
+  console.log('👓 Seeding Frame Platform Data from Wireframe PDF...');
+  await prisma.frameItem.deleteMany();
+
+  await prisma.frameItem.create({
+    data: {
+      wholesalerId: w1.id,
+      entryType: 'GROUP',
+      brand: 'Oleva',
+      model: 'OLV1201',
+      code: 'C4',
+      category: 'Eyeglasses',
+      gender: 'Unisex',
+      type: 'Full-rim',
+      material: 'Plastic',
+      kindOfMaterial: 'Celluloid',
+      frameShape: 'Rectangle',
+      isPolarized: false,
+      detail: 'Oleva Optical frames engineered with lightweight Japanese cellulose acetate and flexible spring hinge.',
+      boxingNotation: '52 ▢ 17 – 147',
+      lensWidthA: 52,
+      lensHeightB: 38,
+      effectiveDiaEd: 58,
+      bridgeDbl: 18,
+      lensDia: 60,
+      pupillaryDistanceFpd: 72,
+      frameSize: 'M',
+      quantity: 100,
+      price: 85,
+      wholesalePrice: 42,
+      pictures: {
+        create: [
+          {
+            url: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?auto=format&fit=crop&w=800&q=80',
+            isPrimary: true,
+            sortOrder: 0,
+          },
+          {
+            url: 'https://images.unsplash.com/photo-1591076482161-42ce6da69f67?auto=format&fit=crop&w=800&q=80',
+            isPrimary: false,
+            sortOrder: 1,
+          },
+        ],
+      },
+      accessories: {
+        create: [
+          { name: 'Case', isIncluded: true, picUrl: 'https://images.unsplash.com/photo-1591076482161-42ce6da69f67?auto=format&fit=crop&w=200&q=80' },
+          { name: 'Bag', isIncluded: true, picUrl: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?auto=format&fit=crop&w=200&q=80' },
+          { name: 'Clean pad', isIncluded: true },
+          { name: 'Warranty Card', isIncluded: true },
+          { name: 'Clip', isIncluded: true },
+          { name: 'Others', isIncluded: true },
+        ],
+      },
+      variants: {
+        create: [
+          { code: 'C1', colorName: 'Piano Black', quantity: 20, sku: 'OLV1201-C1' },
+          { code: 'C2', colorName: 'Demi Amber Tortoise', quantity: 20, sku: 'OLV1201-C2' },
+          { code: 'C3', colorName: 'Translucent Grey', quantity: 20, sku: 'OLV1201-C3' },
+          { code: 'C4', colorName: 'Olive Crystal', quantity: 40, sku: 'OLV1201-C4' },
+        ],
+      },
+    },
+  });
+
+  await prisma.frameItem.create({
+    data: {
+      wholesalerId: w1.id,
+      entryType: 'SINGLE',
+      brand: 'RayBan',
+      model: 'RB5154',
+      code: 'Clubmaster',
+      category: 'Sunglasses',
+      gender: 'Man',
+      type: 'Half-rim',
+      material: 'Metal/Plastic',
+      kindOfMaterial: 'Mixed',
+      frameShape: 'Browline',
+      isPolarized: true,
+      detail: 'Iconic retro browline sunglasses with polarized UV400 lenses and adjustable nose pads.',
+      boxingNotation: '51 ▢ 21 – 145',
+      lensWidthA: 51,
+      lensHeightB: 39,
+      effectiveDiaEd: 55,
+      bridgeDbl: 21,
+      lensDia: 58,
+      pupillaryDistanceFpd: 70,
+      frameSize: 'L',
+      quantity: 50,
+      price: 155,
+      wholesalePrice: 85,
+      pictures: {
+        create: [
+          {
+            url: 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=800&q=80',
+            isPrimary: true,
+            sortOrder: 0,
+          },
+        ],
+      },
+      accessories: {
+        create: [
+          { name: 'Case', isIncluded: true },
+          { name: 'Clean pad', isIncluded: true },
+          { name: 'Warranty Card', isIncluded: true },
+        ],
+      },
+      variants: {
+        create: [
+          { code: 'C1', colorName: 'Black/Gold', quantity: 50, sku: 'RB5154-C1' },
+        ],
+      },
+    },
+  });
+
   console.log('✅ BrightEyes Seed Data Successfully Created!');
   console.log('========================================================');
   console.log('👑 Super Admin:   admin@brighteyes.com / password123');

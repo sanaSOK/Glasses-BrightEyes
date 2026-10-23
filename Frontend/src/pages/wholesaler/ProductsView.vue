@@ -5,12 +5,20 @@
         <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Product Catalog Management</h1>
         <p class="text-xs text-slate-500 mt-1">Manage optical products, SKUs, wholesale pricing, and initial stock</p>
       </div>
-      <button
-        @click="openCreateModal"
-        class="px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold shadow-md flex items-center gap-2"
-      >
-        <Plus class="w-4 h-4" /> Add Product
-      </button>
+      <div class="flex items-center gap-2">
+        <router-link
+          to="/wholesaler/frames"
+          class="px-4 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-bold shadow-md flex items-center gap-2"
+        >
+          <Glasses class="w-4 h-4" /> Frame Platform
+        </router-link>
+        <button
+          @click="openCreateModal"
+          class="px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold shadow-md flex items-center gap-2"
+        >
+          <Plus class="w-4 h-4" /> Add Product
+        </button>
+      </div>
     </div>
 
     <!-- Products Table -->
@@ -157,7 +165,7 @@ import { productService } from '@/services/product.service';
 import { categoryService } from '@/services/category.service';
 import type { Product, ProductCategory, ProductType } from '@/types';
 import StockBadge from '@/components/common/StockBadge.vue';
-import { Plus } from 'lucide-vue-next';
+import { Plus, Glasses } from 'lucide-vue-next';
 
 const authStore = useAuthStore();
 const products = ref<Product[]>([]);

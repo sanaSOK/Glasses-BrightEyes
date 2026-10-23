@@ -12,6 +12,7 @@ import { OrdersModule } from './orders/orders.module';
 import { DeliveryModule } from './delivery/delivery.module';
 import { AdminModule } from './admin/admin.module';
 import { LensesModule } from './lenses/lenses.module';
+import { FramesModule } from './frames/frames.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { LensesModule } from './lenses/lenses.module';
     DeliveryModule,
     AdminModule,
     LensesModule,
+    FramesModule,
   ],
 })
 export class AppModule {}

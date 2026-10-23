@@ -1,7 +1,7 @@
 <template>
   <aside
     :class="[
-      'relative bg-slate-900 text-slate-300 min-h-screen flex flex-col justify-between shrink-0 shadow-xl transition-all duration-300 ease-in-out',
+      'sticky top-0 h-screen self-start z-40 bg-slate-900 text-slate-300 flex flex-col justify-between shrink-0 shadow-xl transition-all duration-300 ease-in-out',
       sidebarStore.isCollapsed ? 'w-20 p-3' : 'w-64 p-4'
     ]"
   >
@@ -16,7 +16,7 @@
       <ChevronLeft v-else class="w-4 h-4" />
     </button>
 
-    <div>
+    <div class="flex-1 flex flex-col overflow-y-auto min-h-0 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden pr-0.5">
       <!-- Back to Home Button -->
       <router-link
         to="/"
@@ -93,7 +93,7 @@
     </div>
 
     <!-- User Profile Footer -->
-    <div class="pt-4 border-t border-slate-800/80">
+    <div class="pt-4 border-t border-slate-800/80 shrink-0">
       <div v-if="!sidebarStore.isCollapsed" class="flex items-center justify-between text-xs text-slate-500">
         <span>BrightEyes B2B</span>
         <span class="text-emerald-400 font-semibold flex items-center gap-1">
@@ -133,6 +133,7 @@ import {
   ChevronLeft,
   ChevronRight,
   MapPin,
+  Glasses,
 } from 'lucide-vue-next';
 
 const authStore = useAuthStore();
@@ -148,6 +149,7 @@ const navItems = computed(() => {
   if (currentPortal.value === 'SUPER_ADMIN') {
     return [
       { name: 'Dashboard', path: '/admin', icon: LayoutDashboard },
+      { name: 'Frame Platform', path: '/admin/frames', icon: Glasses },
       { name: 'Lens Matrix POS', path: '/admin/lenses', icon: Grid },
       { name: 'Cambodia Optical Map', path: '/admin/map', icon: MapPin },
       { name: 'Users', path: '/admin/users', icon: Users },
@@ -161,6 +163,7 @@ const navItems = computed(() => {
   if (currentPortal.value === 'WHOLESALER') {
     return [
       { name: 'Dashboard', path: '/wholesaler', icon: LayoutDashboard },
+      { name: 'Frame Platform', path: '/wholesaler/frames', icon: Glasses },
       { name: 'Cambodia Optical Map', path: '/wholesaler/map', icon: MapPin },
       { name: 'My Products', path: '/wholesaler/products', icon: Package },
       { name: 'Live Inventory', path: '/wholesaler/inventory', icon: Boxes },
@@ -172,6 +175,7 @@ const navItems = computed(() => {
   // Retailer
   return [
     { name: 'Dashboard', path: '/retailer', icon: LayoutDashboard },
+    { name: 'Frame Platform', path: '/retailer/frames', icon: Glasses },
     { name: 'Cambodia Optical Map', path: '/retailer/map', icon: MapPin },
     { name: 'Optical Catalog', path: '/retailer/products', icon: Package },
     { name: 'Wholesalers', path: '/retailer/wholesalers', icon: Building2 },

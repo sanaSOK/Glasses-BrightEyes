@@ -62,6 +62,11 @@ const router = createRouter({
           component: () => import('@/pages/admin/AllProductsView.vue'),
         },
         {
+          path: 'frames',
+          name: 'admin-frames',
+          component: () => import('@/pages/common/FramePlatformView.vue'),
+        },
+        {
           path: 'orders',
           name: 'admin-orders',
           component: () => import('@/pages/admin/AllOrdersView.vue'),
@@ -89,6 +94,11 @@ const router = createRouter({
           path: '',
           name: 'wholesaler-dashboard',
           component: () => import('@/pages/wholesaler/WholesalerDashboard.vue'),
+        },
+        {
+          path: 'frames',
+          name: 'wholesaler-frames',
+          component: () => import('@/pages/common/FramePlatformView.vue'),
         },
         {
           path: 'products',
@@ -128,6 +138,11 @@ const router = createRouter({
           path: '',
           name: 'retailer-dashboard',
           component: () => import('@/pages/retailer/RetailerDashboard.vue'),
+        },
+        {
+          path: 'frames',
+          name: 'retailer-frames',
+          component: () => import('@/pages/common/FramePlatformView.vue'),
         },
         {
           path: 'products',

@@ -92,6 +92,7 @@ model Wholesaler {
   products    Product[]
   inventories Inventory[]
   orders      Order[]
+  frames      FrameItem[]
 
   @@map("wholesalers")
 }
@@ -538,5 +539,91 @@ model OrderLensItem {
 
   @@map("order_lens_items")
 }
+
+// =========================================================================
+// FRAME PLATFORM SYSTEM (Single Frame & Group Frames)
+// =========================================================================
+
+model FrameItem {
+  id                    String                @id @default(uuid())
+  wholesalerId          String?
+  wholesaler            Wholesaler?           @relation(fields: [wholesalerId], references: [id], onDelete: SetNull)
+  entryType             String                @default("SINGLE") // 'SINGLE', 'GROUP'
+  brand                 String                // e.g. 'Oleva'
+  model                 String                // e.g. 'OLV1201'
+  code                  String?               // e.g. 'C4' (for single frame)
+  category              String                @default("Eyeglasses") // 'Eyeglasses', 'Eyeglasses Clip', 'Sunglasses', 'Reading Glasses', 'Sportive', 'Safety', 'Others'
+  gender                String                @default("Unisex") // 'Woman', 'Man', 'Kid', 'Unisex'
+  type                  String                @default("Full-rim") // 'Full-rim', 'Half-rim', 'Rimless'
+  material              String                @default("Plastic") // 'Plastic', 'Metal', 'Plastic/Metal', 'Metal/Plastic'
+  kindOfMaterial        String?               // 'Plastic', 'Resin', 'Celluloid', 'Metal', 'Metal Flex', 'Stainless', 'Titanium', 'Mixed', 'Others'
+  frameShape            String?               // 'Rectangle', 'Oval', 'Round', 'Wellington', 'Boston', 'Browline', 'Rimless', 'Other'
+  isPolarized           Boolean               @default(false)
+  detail                String?               @db.Text
+  
+  // Boxing System Measurements
+  boxingNotation        String?               // e.g. '52 ▢ 17 – 147'
+  lensWidthA            Float?                // A (e.g. 52)
+  lensHeightB           Float?                // B (e.g. 38)
+  effectiveDiaEd        Float?                // ED (e.g. 58)
+  bridgeDbl             Float?                // DBL (e.g. 18)
+  lensDia               Float?                // DIA (e.g. 60)
+  pupillaryDistanceFpd  Float?                // FPD (e.g. 72)
+  frameSize             String?               // 'S', 'M', 'L', 'XL'
+
+  // Inventory & Pricing
+  quantity              Int                   @default(0)
+  price                 Float                 @default(0)
+  wholesalePrice        Float                 @default(0)
+  status                String                @default("ACTIVE") // 'ACTIVE', 'INACTIVE', 'OUT_OF_STOCK'
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
+
+  pictures              FramePicture[]
+  accessories           FrameAccessoryItem[]
+  variants              FrameVariantItem[]
+
+  @@map("frame_items")
+}
+
+model FramePicture {
+  id        String    @id @default(uuid())
+  frameId   String
+  frame     FrameItem @relation(fields: [frameId], references: [id], onDelete: Cascade)
+  url       String
+  isPrimary Boolean   @default(false)
+  sortOrder Int       @default(0)
+  createdAt DateTime  @default(now())
+
+  @@map("frame_pictures")
+}
+
+model FrameAccessoryItem {
+  id         String    @id @default(uuid())
+  frameId    String
+  frame      FrameItem @relation(fields: [frameId], references: [id], onDelete: Cascade)
+  name       String    // 'Case', 'Bag', 'Clean pad', 'Warranty Card', 'Clip', 'Others'
+  isIncluded Boolean   @default(true)
+  picUrl     String?
+  createdAt  DateTime  @default(now())
+
+  @@map("frame_accessories")
+}
+
+model FrameVariantItem {
+  id         String    @id @default(uuid())
+  frameId    String
+  frame      FrameItem @relation(fields: [frameId], references: [id], onDelete: Cascade)
+  code       String    // 'C1', 'C2', 'C3', 'C4'
+  colorName  String?
+  quantity   Int       @default(0) // Quantity breakdown per code, e.g. C1:20
+  sku        String?
+  picUrl     String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@map("frame_variants")
+}
+
 
 
